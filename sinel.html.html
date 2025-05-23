@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sinel: Un Romance Real</title>
+    <style>
+        /* CSS Integrado */
+        body {
+            font-family: 'Georgia', serif; /* Cambiado a una fuente más clásica */
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to right, #e0f2f7, #c1e7f0); /* Fondo degradado suave */
+            color: #333;
+            line-height: 1.6;
+        }
+
+        header {
+            background-color: #5d2b8b; /* Morado más oscuro y elegante */
+            color: white;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif; /* Fuente elegante para el título principal */
+            font-size: 2.8em;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        main {
+            padding: 20px;
+            max-width: 900px; /* Ancho máximo para el contenido principal */
+            margin: 20px auto; /* Centrar el contenido */
+            background-color: rgba(255, 255, 255, 0.95); /* Fondo blanco semi-transparente */
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .image-container {
+            display: flex;
+            flex-direction: row; /* Imágenes en fila en pantallas grandes */
+            justify-content: space-around; /* Espacio entre imágenes */
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap; /* Permite que las imágenes se envuelvan */
+        }
+
+        .image-container img {
+            width: 45%; /* Ajusta el ancho de las imágenes */
+            max-width: 350px; /* Ancho máximo para evitar que sean demasiado grandes */
+            height: auto;
+            border-radius: 10px;
+            margin: 15px; /* Más margen para separación */
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease-in-out; /* Animación al pasar el ratón */
+        }
+
+        .image-container img:hover {
+            transform: scale(1.03); /* Ligeramente más grande al pasar el ratón */
+        }
+
+        .story {
+            padding: 25px;
+        }
+
+        .story h2 {
+            font-family: 'Playfair Display', serif;
+            color: #5d2b8b;
+            margin-top: 0;
+            font-size: 2em;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .story p {
+            margin-bottom: 1.5em;
+            text-align: justify;
+            font-size: 1.1em;
+        }
+
+        footer {
+            text-align: center;
+            padding: 15px;
+            background-color: #333;
+            color: white;
+            margin-top: 30px;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Estilos para pantallas más pequeñas (móviles) */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+            }
+
+            .image-container {
+                flex-direction: column; /* Imágenes en columna en móviles */
+            }
+
+            .image-container img {
+                width: 90%;
+                margin: 10px auto; /* Centrar imágenes en móviles */
+                max-width: none; /* Sin límite máximo en móviles */
+            }
+
+            main {
+                padding: 15px;
+                margin: 15px auto;
+            }
+
+            .story h2 {
+                font-size: 1.6em;
+            }
+
+            .story p {
+                font-size: 1em;
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Georgia&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <h1>El Encanto de Sinel</h1>
+    </header>
+
+    <main>
+        <div class="image-container">
+            <img src="https://64.media.tumblr.com/44d92d8c56f8b7b304b97924632e0122/a11e18fb27e7c49a-a5/s540x810/39d3bbd73e6e795a021d0b71952589577c248175.jpg" alt="Princesa Sinel">
+            <img src="https://64.media.tumblr.com/6ce1b2db5b232eee221062bc650581a2/a11e18fb27e7c49a-c4/s540x810/22b3ca7aa24b01b3aa7ddcbfc08c58002b0df564.jpg" alt="Rey Wilmer II">
+        </div>
+
+        <section class="story">
+            <h2>La Leyenda de Sinel y Wilmer II</h2>
+            <p>En el reino de Eldoria, bañado por la luz de dos soles gemelos, vivía la princesa Sinel. Su belleza era tan radiante como el amanecer, y su corazón tan puro como el cristal de los lagos encantados. Un día, durante un festival de las flores celestiales, conoció al rey Wilmer II del reino vecino de Valoria. Wilmer II era un hombre de porte noble y mirada bondadosa, cuyo reino era famoso por sus vastos bosques y la sabiduría de sus ancianos.</p>
+            <p>Fue un amor a primera vista, tan intenso como el choque de las olas contra los acantilados. Sinel y Wilmer II pasaban horas conversando bajo la sombra de los árboles susurrantes, descubriendo un destino compartido entre risas y confidencias. Sin embargo, su unión no estuvo exenta de desafíos. La reina Morwen, consejera del rey Wilmer II y poseedora de oscuros secretos, veía con recelo esta alianza que podía alterar el equilibrio de poder entre los reinos.</p>
+            <p>Morwen urdió un plan para sembrar discordia, utilizando antiguas magias y engaños sutiles. Intentó convencer a Wilmer II de que Sinel no era digna de su amor, y esparció rumores maliciosos entre la corte de Eldoria. Pero el amor entre Sinel y Wilmer II era fuerte, alimentado por la confianza y la comprensión mutua. Con la ayuda de Elara, una sabia curandera del bosque con conocimientos ancestrales, descubrieron las artimañas de Morwen.</p>
+            <p>En un juicio frente a ambos reinos, las pruebas de la maldad de Morwen salieron a la luz. Wilmer II, con el apoyo de su pueblo y la firmeza de su amor por Sinel, desterró a Morwen y reafirmó su compromiso con la princesa de Eldoria. La boda de Sinel y Wilmer II fue una celebración que unió a ambos reinos en una era de paz y prosperidad. Se decía que su amor era un faro de esperanza, iluminando el camino para las futuras generaciones de Eldoria y Valoria.</p>
+            <p>Juntos, Sinel y Wilmer II gobernaron con justicia y compasión, recordando siempre los desafíos que superaron para estar juntos. Su historia se convirtió en una leyenda, cantada por los bardos y contada al calor de las fogatas, un testimonio del poder invencible del amor verdadero frente a la adversidad.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p>© 2025 El Encanto de Sinel</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>El Gusanito de Britnimar</title> <style>
+        /* Estilos CSS */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0; /* Fondo blanco/gris claro en lugar de la imagen */
+            /* Se eliminaron las propiedades background-image, background-size, background-position, background-attachment */
+            font-family: 'Arial', sans-serif;
+            color: #333;
+            overflow: hidden; /* Evita el scroll en móviles */
+        }
+
+        .game-container {
+            background-color: rgba(255, 255, 255, 0.85); /* Blanco con transparencia ligeramente reducida */
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); /* Sombra un poco más marcada */
+            padding: 25px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            position: relative; /* Para el posicionamiento del game-over */
+            z-index: 1; /* Asegura que el contenedor esté por encima del fondo */
+        }
+
+        .game-title {
+            font-size: 2.5em;
+            color: #4CAF50; /* Verde vibrante */
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.2); /* Sombra de texto un poco más marcada */
+        }
+
+        .score-display {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #FFC107; /* Amarillo para los puntos */
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2); /* Sombra de texto para los puntos */
+        }
+
+        #gameCanvas {
+            background-color: rgba(224, 255, 224, 0.9); /* Verde muy claro con transparencia reducida para el tablero */
+            border: 5px solid #4CAF50; /* Borde verde para el tablero */
+            border-radius: 10px;
+            display: block; /* Elimina espacio extra debajo del canvas */
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .control-button {
+            background-color: #6a1b9a; /* Púrpura oscuro */
+            color: white;
+            border: none;
+            border-radius: 50%; /* Botones redondos */
+            width: 60px;
+            height: 60px;
+            font-size: 2em;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Sombra de botón un poco más marcada */
+            transition: transform 0.1s ease, background-color 0.2s ease;
+        }
+
+        .control-button:active {
+            transform: scale(0.95);
+            background-color: #8e24aa; /* Púrpura más claro al presionar */
+        }
+
+        .horizontal-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Pantalla de Game Over y Pantalla de Inicio */
+        .overlay-screen {
+            display: flex; /* Se mostrará o no por JS */
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            border-radius: 20px;
+        }
+
+        .overlay-content {
+            background: linear-gradient(135deg, #ff6b6b, #ee4444); /* Degradado rojo para Game Over */
+            border-radius: 15px;
+            padding: 30px 40px;
+            text-align: center;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+            animation: fadeInScale 0.5s ease-out;
+            color: white; /* Asegura que el texto sea blanco */
+        }
+
+        #startScreen .overlay-content {
+            background: linear-gradient(135deg, #a8e063, #56ab2f); /* Degradado verde para Inicio */
+        }
+
+        .overlay-content h2 {
+            font-size: 2.8em;
+            color: white;
+            margin-bottom: 25px;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+            font-weight: bold;
+        }
+
+        .final-score {
+            font-size: 2em;
+            font-weight: bold;
+            color: #FFC107; /* Amarillo para la puntuación final */
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .action-button {
+            background-color: #4CAF50; /* Verde brillante */
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 15px 30px;
+            font-size: 1.5em;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .action-button:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+        }
+
+        .action-button:active {
+            transform: translateY(0);
+        }
+
+        /* Animaciones */
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1 class="game-title">🐛 El Gusanito de Britnimar 🍌</h1> <div class="score-display">Puntos: <span id="score">0</span></div>
+        <canvas id="gameCanvas" width="300" height="300"></canvas>
+        <div class="controls">
+            <button id="up" class="control-button">⬆️</button>
+            <div class="horizontal-controls">
+                <button id="left" class="control-button">⬅️</button>
+                <button id="right" class="control-button">➡️</button>
+            </div>
+            <button id="down" class="control-button">⬇️</button>
+        </div>
+    </div>
+
+    <div id="startScreen" class="overlay-screen">
+        <div class="overlay-content">
+            <h2>¡Bienvenido al Gusanito de Britnimar!</h2> <button id="startButton" class="action-button">Jugar</button>
+        </div>
+    </div>
+
+    <div id="gameOverScreen" class="overlay-screen" style="display: none;">
+        <div class="overlay-content">
+            <h2>¡Juego Terminado!</h2>
+            <div class="final-score">Tu puntuación final fue: <span id="finalScore">0</span></div>
+            <button id="restartButton" class="action-button">Reiniciar</button>
+        </div>
+    </div>
+
+    <script>
+        // Lógica de JavaScript
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreDisplay = document.getElementById('score');
+        const gameOverScreen = document.getElementById('gameOverScreen');
+        const finalScoreDisplay = document.getElementById('finalScore');
+        const restartButton = document.getElementById('restartButton');
+        const startScreen = document.getElementById('startScreen');
+        const startButton = document.getElementById('startButton');
+
+        // Botones de control táctil
+        const upButton = document.getElementById('up');
+        const downButton = document.getElementById('down');
+        const leftButton = document.getElementById('left');
+        const rightButton = document.getElementById('right');
+
+        const gridSize = 20;
+        const tileCount = canvas.width / gridSize;
+
+        let snake = [{ x: 10, y: 10 }];
+        let food = {};
+        let dx = 0;
+        let dy = 0;
+        let score = 0;
+        let gameInterval;
+        let gameSpeed = 150;
+        let isGameOver = false;
+        let gameRunning = false;
+
+        function initializeGame() {
+            snake = [{ x: 10, y: 10 }];
+            dx = 1; // Establece una dirección inicial por defecto (ej. hacia la derecha)
+            dy = 0;
+            score = 0;
+            scoreDisplay.textContent = score;
+            isGameOver = false;
+            gameRunning = true;
+            startScreen.style.display = 'none';
+            gameOverScreen.style.display = 'none';
+            gameSpeed = 150;
+            generateFood();
+            if (gameInterval) clearInterval(gameInterval);
+            gameInterval = setInterval(gameLoop, gameSpeed); // Inicia el bucle del juego aquí
+            drawGame();
+        }
+
+        function generateFood() {
+            let newFoodX, newFoodY;
+            let collisionWithSnake;
+
+            do {
+                newFoodX = Math.floor(Math.random() * tileCount);
+                newFoodY = Math.floor(Math.random() * tileCount);
+                collisionWithSnake = false;
+                for (let i = 0; i < snake.length; i++) {
+                    if (snake[i].x === newFoodX && snake[i].y === newFoodY) {
+                        collisionWithSnake = true;
+                        break;
+                    }
+                }
+            } while (collisionWithSnake);
+
+            food = { x: newFoodX, y: newFoodY };
+        }
+
+        function drawGame() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            for (let i = 0; i < snake.length; i++) {
+                if (i === 0) {
+                    ctx.font = `${gridSize}px sans-serif`;
+                    ctx.fillText('🐛', snake[i].x * gridSize, snake[i].y * gridSize + gridSize - 2);
+                } else {
+                    ctx.fillStyle = '#6ab04c';
+                    ctx.fillRect(snake[i].x * gridSize, snake[i].y * gridSize, gridSize - 2, gridSize - 2);
+                    ctx.strokeStyle = '#38761d';
+                    ctx.strokeRect(snake[i].x * gridSize, snake[i].y * gridSize, gridSize - 2, gridSize - 2);
+                }
+            }
+
+            ctx.font = `${gridSize}px sans-serif`;
+            ctx.fillText('🍌', food.x * gridSize, food.y * gridSize + gridSize - 2);
+        }
+
+        function moveSnake() {
+            const head = { x: snake[0].x + dx, y: snake[0].y + dy };
+
+            if (head.x < 0 || head.x >= tileCount || head.y < 0 || head.y >= tileCount) {
+                endGame();
+                return;
+            }
+
+            for (let i = 1; i < snake.length; i++) {
+                if (head.x === snake[i].x && head.y === snake[i].y) {
+                    endGame();
+                    return;
+                }
+            }
+
+            snake.unshift(head);
+
+            if (head.x === food.x && head.y === food.y) {
+                score += 10;
+                scoreDisplay.textContent = score;
+                generateFood();
+                if (gameSpeed > 50) {
+                    gameSpeed -= 5;
+                    clearInterval(gameInterval);
+                    gameInterval = setInterval(gameLoop, gameSpeed);
+                }
+            } else {
+                snake.pop();
+            }
+        }
+
+        function gameLoop() {
+            if (isGameOver) return;
+            moveSnake();
+            drawGame();
+        }
+
+        function endGame() {
+            isGameOver = true;
+            gameRunning = false;
+            clearInterval(gameInterval);
+            finalScoreDisplay.textContent = score;
+            gameOverScreen.style.display = 'flex';
+        }
+
+        function changeDirection(newDx, newDy) {
+            if (gameRunning && !isGameOver) {
+                if (newDx !== 0 && dx === -newDx) return;
+                if (newDy !== 0 && dy === -newDy) return;
+
+                dx = newDx;
+                dy = newDy;
+            }
+        }
+
+        document.addEventListener('keydown', e => {
+            if (isGameOver) return;
+
+            switch (e.key) {
+                case 'ArrowUp':
+                    changeDirection(0, -1);
+                    break;
+                case 'ArrowDown':
+                    changeDirection(0, 1);
+                    break;
+                case 'ArrowLeft':
+                    changeDirection(-1, 0);
+                    break;
+                case 'ArrowRight':
+                    changeDirection(1, 0);
+                    break;
+            }
+        });
+
+        upButton.addEventListener('click', () => {
+            if (isGameOver) return;
+            changeDirection(0, -1);
+        });
+        downButton.addEventListener('click', () => {
+            if (isGameOver) return;
+            changeDirection(0, 1);
+        });
+        leftButton.addEventListener('click', () => {
+            if (isGameOver) return;
+            changeDirection(-1, 0);
+        });
+        rightButton.addEventListener('click', () => {
+            if (isGameOver) return;
+            changeDirection(1, 0);
+        });
+
+        restartButton.addEventListener('click', initializeGame);
+        startButton.addEventListener('click', initializeGame);
+
+        window.onload = () => {
+            drawGame();
+            startScreen.style.display = 'flex';
+        };
+    </script>
+</body>
+</html>

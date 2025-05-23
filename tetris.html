@@ -359,8 +359,10 @@
                 });
                 currentPiece = null;
                 clearLines(); // Verificar y limpiar líneas
-                if (!createNewPiece()) { // Intentar crear una nueva pieza
-                    gameOver(); // Si no se puede, es Game Over
+                // Después de congelar, siempre intentamos crear una nueva pieza
+                // Si la nueva pieza no puede colocarse, es Game Over
+                if (!createNewPiece()) {
+                    gameOver();
                 }
             }
         }
@@ -423,7 +425,8 @@
             gameOverScreen.classList.add('hidden'); // Ocultar pantalla de Game Over
 
             if (!createNewPiece()) { // Intentar crear la primera pieza
-                gameOver(); // Si no se puede (muy poco probable al inicio), Game Over
+                // Si no se puede (muy poco probable al inicio, pero es una buena verificación), Game Over
+                gameOver();
                 return;
             }
 
@@ -458,6 +461,7 @@
                     movePieceRight();
                     break;
                 case 'ArrowDown':
+                    // Permite mover hacia abajo rápidamente, pero no congela inmediatamente
                     movePieceDown();
                     break;
                 case 'ArrowUp': // Para rotar
@@ -479,9 +483,10 @@
         // Botón de reiniciar juego (en la pantalla de Game Over)
         restartBtn.addEventListener('click', startGame);
 
-        // --- Inicialización ---
+        // --- Inicialización al cargar la página ---
+        // Se puede dejar la pantalla de inicio o simplemente dibujar el grid vacío
         createGrid();
-        drawGrid(); // Muestra el tablero vacío al cargar la página
+        drawGrid();
     </script>
 </body>
 </html>

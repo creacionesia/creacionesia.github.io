@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tetris Simple</title>
+    <style>
+        /* --- CSS del Juego --- */
+        body {
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f0f0f0;
+            margin: 0;
+        }
+
+        .container {
+            background-color: #ddd;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            position: relative; /* Para posicionar el Game Over */
+        }
+
+        canvas {
+            background-color: #333;
+            margin-bottom: 10px;
+            border: 2px solid #555;
+            display: block; /* Elimina espacios extra debajo del canvas */
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .controls button {
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            background-color: #007bff;
+            color: white;
+            transition: background-color 0.3s ease;
+        }
+
+        .controls button:hover {
+            background-color: #0056b3;
+        }
+
+        .controls p {
+            margin-top: 10px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        #gameOverScreen {
+            position: absolute;
+            top: 0; /* Cubrir todo el contenedor */
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.9); /* Fondo más oscuro y opaco */
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            z-index: 10; /* Asegura que esté por encima del canvas */
+        }
+
+        #gameOverScreen h2 {
+            margin-top: 0;
+            font-size: 2.5em;
+            color: #ffdd00; /* Un color más llamativo */
+        }
+
+        #gameOverScreen p {
+            font-size: 1.5em;
+            margin: 15px 0;
+        }
+
+        #gameOverScreen button {
+            padding: 12px 25px;
+            margin-top: 20px;
+            cursor: pointer;
+            font-size: 18px;
+            border: none;
+            border-radius: 5px;
+            background-color: #dc3545; /* Rojo para reiniciar */
+            color: white;
+            transition: background-color 0.3s ease;
+        }
+
+        #gameOverScreen button:hover {
+            background-color: #c82333;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Tetris Simple</h1>
+        <canvas id="tetris" width="240" height="480"></canvas>
+        <div class="controls">
+            <button id="startBtn">Iniciar Juego</button>
+            <p>Puntuación: <span id="score">0</span></p>
+        </div>
+        <div id="gameOverScreen" class="hidden">
+            <h2>¡Game Over!</h2>
+            <p>Puntuación Final: <span id="finalScore">0</span></p>
+            <button id="restartBtn">Reiniciar Juego</button>
+        </div>
+    </div>
+
+    <script>
+        /* --- JavaScript del Juego --- */
+        const canvas = document.getElementById('tetris');
+        const context = canvas.getContext('2d');
+        const scoreElement = document.getElementById('score');
+        const startBtn = document.getElementById('startBtn');
+        const gameOverScreen = document.getElementById('gameOverScreen');
+        const finalScoreElement = document.getElementById('finalScore');
+        const restartBtn = document.getElementById('restartBtn');
+
+        // Dimensiones del tablero de juego
+        const gridRows = 20;
+        const gridCols = 10;
+        const blockSize = 24; // Tamaño de cada bloque en píxeles
+
+        // Ajustar el tamaño del canvas dinámicamente
+        canvas.width = gridCols * blockSize;
+        canvas.height = gridRows * blockSize;
+
+        let grid = []; // El tablero de juego
+        let currentPiece = null; // Pieza que está cayendo actualmente
+        let gameInterval; // Intervalo para el bucle del juego
+        let isGameOver = false;
+        let score = 0;
+        let gameSpeed = 500; // Velocidad inicial del juego (ms)
+
+        // Colores para las piezas (índice 0 es para celdas vacías)
+        const colors = [
+            null,       // 0: Vacío
+            '#00FFFF',  // 1: I (Cyan)
+            '#0000FF',  // 2: J (Azul)
+            '#FF7F00',  // 3: L (Naranja)
+            '#FFFF00',  // 4: O (Amarillo)
+            '#00FF00',  // 5: S (Verde)
+            '#800080',  // 6: T (Púrpura)
+            '#FF0000'   // 7: Z (Rojo)
+        ];
+
+        // Definición de las formas de los tetrominós (coordenadas relativas al punto central)
+        const tetrominoes = [
+            [], // 0: vacio (no usado, solo para alinear índices)
+            [ [0, -1], [0, 0], [0, 1], [0, 2] ],      // I
+            [ [0, -1], [0, 0], [1, 0], [1, 1] ],      // J
+            [ [0, -1], [0, 0], [-1, 0], [-1, 1] ],     // L
+            [ [0, 0], [1, 0], [0, 1], [1, 1] ],       // O
+            [ [0, 0], [-1, 0], [0, 1], [1, 1] ],      // S
+            [ [0, -1], [0, 0], [-1, 0], [0, 1] ],     // T
+            [ [0, 0], [1, 0], [0, -1], [-1, -1] ]      // Z
+        ];
+
+        /**
+         * Inicializa el tablero de juego (grid) con celdas vacías.
+         */
+        function createGrid() {
+            grid = []; // Limpiar grid existente
+            for (let y = 0; y < gridRows; y++) {
+                grid.push(Array(gridCols).fill(0));
+            }
+        }
+
+        /**
+         * Crea una nueva pieza aleatoria en la parte superior del tablero.
+         * @returns {object} La nueva pieza creada.
+         */
+        function createPiece() {
+            const type = Math.floor(Math.random() * (tetrominoes.length - 1)) + 1; // Tipo aleatorio (1 a 7)
+            // Clonar la forma para no modificar la original en tetrominoes
+            const tetromino = tetrominoes[type].map(block => ({ ...block }));
+            return {
+                type: type,
+                shape: tetromino,
+                x: Math.floor(gridCols / 2) - 1, // Posición inicial en X
+                y: 0 // Posición inicial en Y
+            };
+        }
+
+        /**
+         * Dibuja un solo bloque en el canvas.
+         * @param {number} x - Coordenada X del bloque en la cuadrícula.
+         * @param {number} y - Coordenada Y del bloque en la cuadrícula.
+         * @param {number} colorIndex - Índice del color a usar.
+         */
+        function drawBlock(x, y, colorIndex) {
+            if (x < 0 || x >= gridCols || y < 0 || y >= gridRows) return; // Evitar dibujar fuera del canvas
+
+            context.fillStyle = colors[colorIndex];
+            context.fillRect(x * blockSize, y * blockSize, blockSize, blockSize);
+            context.strokeStyle = '#000'; // Borde negro
+            context.strokeRect(x * blockSize, y * blockSize, blockSize, blockSize);
+        }
+
+        /**
+         * Dibuja todos los bloques fijos en el tablero.
+         */
+        function drawGrid() {
+            for (let y = 0; y < gridRows; y++) {
+                for (let x = 0; x < gridCols; x++) {
+                    if (grid[y][x] !== 0) { // Si la celda no está vacía
+                        drawBlock(x, y, grid[y][x]);
+                    }
+                }
+            }
+        }
+
+        /**
+         * Dibuja la pieza que está cayendo actualmente.
+         */
+        function drawPiece() {
+            if (currentPiece) {
+                currentPiece.shape.forEach(block => {
+                    drawBlock(currentPiece.x + block.x, currentPiece.y + block.y, currentPiece.type);
+                });
+            }
+        }
+
+        /**
+         * Dibuja todo el juego: limpia el canvas, dibuja el tablero y la pieza.
+         */
+        function draw() {
+            context.clearRect(0, 0, canvas.width, canvas.height); // Limpiar todo el canvas
+            drawGrid();
+            drawPiece();
+        }
+
+        /**
+         * Verifica si un movimiento o rotación es válido.
+         * @param {object} piece - La pieza a verificar.
+         * @param {number} dx - Cambio en X.
+         * @param {number} dy - Cambio en Y.
+         * @returns {boolean} True si el movimiento es válido, false en caso contrario.
+         */
+        function isValidMove(piece, dx = 0, dy = 0) {
+            for (const block of piece.shape) {
+                const newX = piece.x + block.x + dx;
+                const newY = piece.y + block.y + dy;
+
+                // Fuera de los límites horizontales
+                if (newX < 0 || newX >= gridCols) {
+                    return false;
+                }
+                // Fuera de los límites verticales (abajo)
+                if (newY >= gridRows) {
+                    return false;
+                }
+                // Colisión con bloques existentes (solo si no es la pieza actual misma)
+                if (newY >= 0 && grid[newY][newX] !== 0) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        /**
+         * Mueve la pieza actual hacia abajo.
+         */
+        function movePieceDown() {
+            if (currentPiece) {
+                if (isValidMove(currentPiece, 0, 1)) {
+                    currentPiece.y++;
+                } else {
+                    freezePiece(); // Si no puede moverse, se congela
+                }
+            }
+        }
+
+        /**
+         * Mueve la pieza actual a la izquierda.
+         */
+        function movePieceLeft() {
+            if (currentPiece && isValidMove(currentPiece, -1, 0)) {
+                currentPiece.x--;
+            }
+        }
+
+        /**
+         * Mueve la pieza actual a la derecha.
+         */
+        function movePieceRight() {
+            if (currentPiece && isValidMove(currentPiece, 1, 0)) {
+                currentPiece.x++;
+            }
+        }
+
+        /**
+         * Rota la pieza actual.
+         * Maneja las rotaciones del tipo "wall kick" (ajuste si choca con la pared).
+         */
+        function rotatePiece() {
+            if (currentPiece && currentPiece.type !== 4) { // La pieza 'O' no rota
+                const originalShape = currentPiece.shape;
+                // Fórmula de rotación 90 grados a la derecha: (x, y) -> (-y, x)
+                const newShape = currentPiece.shape.map(({ x, y }) => ({ x: -y, y: x }));
+
+                const originalX = currentPiece.x;
+                const originalY = currentPiece.y;
+                let rotationSuccessful = false;
+
+                // Intentar rotar
+                currentPiece.shape = newShape;
+
+                // Wall kick (ajuste si la rotación choca con paredes u otras piezas)
+                // Esto es una simplificación de la regla SRS de Tetris
+                const kickTests = [
+                    [0, 0], [-1, 0], [1, 0], [0, -1], [0, 1] // Testear mover a la izquierda, derecha, arriba, abajo
+                ];
+
+                for (const [dx, dy] of kickTests) {
+                    currentPiece.x = originalX + dx;
+                    currentPiece.y = originalY + dy;
+                    if (isValidMove(currentPiece)) {
+                        rotationSuccessful = true;
+                        break;
+                    }
+                }
+
+                if (!rotationSuccessful) {
+                    currentPiece.shape = originalShape; // Si no hay lugar, revertir la rotación
+                    currentPiece.x = originalX;
+                    currentPiece.y = originalY;
+                }
+            }
+        }
+
+        /**
+         * Fija la pieza actual en el tablero (grid) y crea una nueva.
+         */
+        function freezePiece() {
+            if (currentPiece) {
+                currentPiece.shape.forEach(block => {
+                    const finalX = currentPiece.x + block.x;
+                    const finalY = currentPiece.y + block.y;
+                    // Asegurarse de que las coordenadas estén dentro de los límites del grid antes de asignar
+                    if (finalY >= 0 && finalY < gridRows && finalX >= 0 && finalX < gridCols) {
+                        grid[finalY][finalX] = currentPiece.type;
+                    }
+                });
+                currentPiece = null;
+                clearLines(); // Verificar y limpiar líneas
+                if (!createNewPiece()) { // Intentar crear una nueva pieza
+                    gameOver(); // Si no se puede, es Game Over
+                }
+            }
+        }
+
+        /**
+         * Busca y elimina las líneas completas, y actualiza la puntuación.
+         */
+        function clearLines() {
+            let linesCleared = 0;
+            for (let y = gridRows - 1; y >= 0; y--) {
+                if (grid[y].every(cell => cell !== 0)) { // Si la línea está completa (no hay ceros)
+                    linesCleared++;
+                    grid.splice(y, 1); // Eliminar la línea
+                    grid.unshift(Array(gridCols).fill(0)); // Añadir una nueva línea vacía arriba
+                    y++; // Volver a revisar la misma fila, ya que las de arriba bajaron
+                }
+            }
+            // Calcular puntuación basada en las líneas eliminadas
+            if (linesCleared === 1) score += 100;
+            else if (linesCleared === 2) score += 300;
+            else if (linesCleared === 3) score += 500;
+            else if (linesCleared === 4) score += 800; // Tetris!
+            scoreElement.textContent = score;
+        }
+
+        /**
+         * Intenta crear una nueva pieza y verifica si el juego ha terminado.
+         * @returns {boolean} True si se pudo crear la pieza, false si el juego ha terminado.
+         */
+        function createNewPiece() {
+            currentPiece = createPiece();
+            // Si la nueva pieza colisiona al crearse, el juego ha terminado
+            if (!isValidMove(currentPiece)) {
+                return false;
+            }
+            return true;
+        }
+
+        /**
+         * El bucle principal del juego. Mueve la pieza hacia abajo y redibuja.
+         */
+        function gameLoop() {
+            if (isGameOver) {
+                clearInterval(gameInterval);
+                return;
+            }
+            movePieceDown();
+            draw();
+        }
+
+        /**
+         * Inicia o reinicia el juego.
+         */
+        function startGame() {
+            createGrid(); // Reiniciar el tablero
+            currentPiece = null;
+            score = 0;
+            scoreElement.textContent = score;
+            isGameOver = false;
+            gameOverScreen.classList.add('hidden'); // Ocultar pantalla de Game Over
+
+            if (!createNewPiece()) { // Intentar crear la primera pieza
+                gameOver(); // Si no se puede (muy poco probable al inicio), Game Over
+                return;
+            }
+
+            clearInterval(gameInterval); // Limpiar cualquier intervalo anterior
+            gameInterval = setInterval(gameLoop, gameSpeed); // Iniciar el bucle del juego
+            draw(); // Dibujar el estado inicial
+        }
+
+        /**
+         * Finaliza el juego y muestra la pantalla de Game Over.
+         */
+        function gameOver() {
+            isGameOver = true;
+            finalScoreElement.textContent = score;
+            gameOverScreen.classList.remove('hidden'); // Mostrar pantalla de Game Over
+            clearInterval(gameInterval); // Detener el bucle del juego
+        }
+
+        // --- Event Listeners (Controladores de eventos) ---
+
+        // Control de teclado para mover y rotar la pieza
+        document.addEventListener('keydown', (event) => {
+            if (isGameOver || !currentPiece) { // Si el juego ha terminado o no hay pieza, ignorar
+                return;
+            }
+
+            switch (event.key) {
+                case 'ArrowLeft':
+                    movePieceLeft();
+                    break;
+                case 'ArrowRight':
+                    movePieceRight();
+                    break;
+                case 'ArrowDown':
+                    movePieceDown();
+                    break;
+                case 'ArrowUp': // Para rotar
+                    rotatePiece();
+                    break;
+                case ' ': // Espacio para caída instantánea (hard drop)
+                    while (isValidMove(currentPiece, 0, 1)) {
+                        currentPiece.y++;
+                    }
+                    freezePiece();
+                    break;
+            }
+            draw(); // Redibujar después de cada movimiento
+        });
+
+        // Botón de iniciar juego
+        startBtn.addEventListener('click', startGame);
+
+        // Botón de reiniciar juego (en la pantalla de Game Over)
+        restartBtn.addEventListener('click', startGame);
+
+        // --- Inicialización ---
+        createGrid();
+        drawGrid(); // Muestra el tablero vacío al cargar la página
+    </script>
+</body>
+</html>

@@ -1,10 +1,11 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Eventos Suafonson</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Pacifico&family=Indie+Flower&family=Luckiest+Guy&family=Georgia&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Georgia&display=swap" rel="stylesheet">
     <style>
         body {
             margin: 0;
@@ -19,9 +20,7 @@
             text-align: center;
             overflow-x: hidden;
             padding: 20px;
-        }
-        header {
-            padding: 20px;
+            position: relative;
         }
         header img {
             width: 180px;
@@ -39,22 +38,12 @@
             color: #00ff88;
             animation: bounce 2s infinite alternate;
         }
-        header h1::before {
-            content: "🎉 ";
-        }
-        header h1::after {
-            content: " 🎈";
-        }
+        header h1::before { content: "🎉 "; }
+        header h1::after { content: " 🎈"; }
         @keyframes bounce {
-            0% {
-                transform: translateY(0);
-            }
-            50% {
-                transform: translateY(-10px);
-            }
-            100% {
-                transform: translateY(0);
-            }
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0); }
         }
         header h2 {
             font-size: 1.2em;
@@ -96,30 +85,21 @@
             font-weight: bold;
             margin-top: 5px;
         }
+        .contador {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            font-size: 0.8em;
+            opacity: 0.4;
+            color: #fff;
+            font-style: italic;
+        }
         footer {
             margin-top: 40px;
             font-size: 0.8em;
             opacity: 0.9;
             color: #fff8dc;
             text-align: center;
-        }
-        @media (min-width: 768px) {
-            header img {
-                width: 220px;
-            }
-            header h1 {
-                font-size: 4em;
-            }
-            header h2 {
-                font-size: 1.7em;
-            }
-            .social a {
-                width: 160px;
-            }
-            .social a img {
-                width: 120px;
-                height: 120px;
-            }
         }
     </style>
 </head>
@@ -143,8 +123,21 @@
             <span>WhatsApp</span>
         </a>
     </div>
+
+    <div class="contador">
+        Visitas: <span id="visitas">...</span>
+    </div>
+
     <footer>
         <p>&copy; 2025 Eventos Suafonson. Todos los derechos reservados.</p>
     </footer>
+
+    <script>
+        fetch('https://api.countapi.xyz/hit/eventossuafonson/visitas')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('visitas').innerText = data.value;
+        });
+    </script>
 </body>
 </html>

